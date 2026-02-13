@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Girlfriend Day</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at center, #fff0f5, #ffe0e9);
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+  color: #d81b60;
+  overflow-x: hidden;
+}
+
+h1 { font-size: 2em; margin-bottom: 10px; }
+
+#counter { font-size: 1em; margin-bottom: 30px; color: #ad1457; }
+
+#gift {
+  font-size: 8rem;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  animation: float 2s infinite ease-in-out;
+  user-select: none;
+  position: relative;
+  z-index: 5;
+}
+
+#gift.tapped { animation: shake 0.3s ease; }
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes shake {
+  0% { transform: rotate(0); }
+  25% { transform: rotate(8deg); }
+  50% { transform: rotate(-8deg); }
+  75% { transform: rotate(5deg); }
+  100% { transform: rotate(0); }
+}
+
+#message {
+  display: none;
+  max-width: 90%;
+  width: 100%;
+  padding: 20px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  margin-top: 30px;
+  animation: popIn 1s ease;
+  font-size: 1.1em;
+  z-index: 2;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.2); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* PHOTO STYLE */
+.photo {
+  position: absolute;
+  width: 110px;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.8s cubic-bezier(.2,1.2,.4,1);
+  z-index: 2;
+  cursor: grab;
+  touch-action: none;
+}
+
+.photo:active {
+  cursor: grabbing;
+}
+
+.photo.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes gentleFloat {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0); }
+}
+
+.burst {
+  position: absolute;
+  font-size: 1.5em;
+  animation: boom 1s ease forwards;
+  pointer-events: none;
+  z-index: 3;
+}
+
+@keyframes boom {
+  0% { opacity: 1; transform: scale(1) translate(0, 0); }
+  100% { opacity: 0; transform: scale(2) translate(var(--x), var(--y)); }
+}
+
+.floating {
+  position: absolute;
+  font-size: 1.5rem;
+  opacity: 0.6;
+  animation: floaty 10s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes floaty {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<h1>Tap Boxnya SASOYYYY!!</h1>
+<div id="counter">0 / 5 taps</div>
+<div id="gift">🎁</div>
+<div id="message"></div>
+
+<img src="aaaa/love-you-sissy.gif" class="photo" id="p1">
+<img src="aaaa/snoopy-esnupi.gif" class="photo" id="p2">
+<img src="aaaa/snoopy.gif" class="photo" id="p3">
+<img src="aaaa/snoopys.gif" class="photo" id="p4">
+
+<script>
+const body = document.body;
+const emojis = ['❤️','💖','✨','🌸','💕'];
+
+for (let i = 0; i < 30; i++) {
+  const float = document.createElement('div');
+  float.className = 'floating';
+  float.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+  float.style.left = Math.random() * 100 + 'vw';
+  float.style.animationDuration = 3 + Math.random() * 3 + 's';
+  float.style.fontSize = (0.8 + Math.random() * 1.2) + 'rem';
+  body.appendChild(float);
+}
+
+const gift = document.getElementById('gift');
+const counter = document.getElementById('counter');
+const message = document.getElementById('message');
+
+let tapCount = 0;
+const maxTaps = 5;
+
+gift.addEventListener('click', (e) => {
+  tapCount++;
+  counter.innerText = `${tapCount} / ${maxTaps} taps`;
+
+  gift.classList.add('tapped');
+  setTimeout(() => gift.classList.remove('tapped'), 200);
+
+  for (let i = 0; i < 5; i++) {
+    createBurst(e.clientX, e.clientY);
+  }
+
+  if (tapCount === maxTaps) {
+    explodeGift();
+  }
+});
+
+function createBurst(x, y) {
+  const burst = document.createElement('div');
+  burst.className = 'burst';
+  burst.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+  burst.style.left = x + 'px';
+  burst.style.top = y + 'px';
+  burst.style.setProperty('--x', `${(Math.random() - 0.5) * 200}px`);
+  burst.style.setProperty('--y', `${(Math.random() - 0.5) * 200}px`);
+  document.body.appendChild(burst);
+  setTimeout(() => burst.remove(), 1000);
+}
+
+function explodeGift() {
+  const rect = gift.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  gift.style.display = 'none';
+  counter.style.display = 'none';
+
+  for (let i = 0; i < 30; i++) {
+    createBurst(centerX, centerY);
+  }
+
+  spreadPhoto('p1', centerX, centerY, -220, -180);
+  spreadPhoto('p2', centerX, centerY, 200, -150);
+  spreadPhoto('p3', centerX, centerY, -200, 160);
+  spreadPhoto('p4', centerX, centerY, 220, 180);
+
+  message.style.display = 'block';
+  message.innerHTML = `
+    💌 <b>HAIHAIIIII!</b><br><br>
+        Happy Valentine Day, cayang acuuuu cewe acuu imup acuuuu!!<br><br>
+        Today is special because of you. Thank you for being there, so patient with me, and always encouraging and caring, even when I can be annoying.<br><br>
+        I know I'm not perfect, I still have many shortcomings, but you're still there and continue to support me. That's something I never take for granted.<br><br>
+        You're not just a girlfriend, but also a friend, a listener, and someone who makes my days feel lighter. I'm so grateful to be with you.<br><br>
+        I hope you're always happy, and know that there's someone who always loves and cares for you: me.<br><br>
+        Once again, Happy Valentine Day my sweetie pieee.<br><br>
+      `;    
+}
+
+function spreadPhoto(id, x, y, offsetX, offsetY) {
+  const photo = document.getElementById(id);
+  photo.style.left = (x - 55) + 'px';
+  photo.style.top = (y - 55) + 'px';
+
+  setTimeout(() => {
+    photo.classList.add('show');
+    photo.style.left = (x + offsetX) + 'px';
+    photo.style.top = (y + offsetY) + 'px';
+    photo.style.animation = 'gentleFloat 4s ease-in-out infinite';
+  }, 100);
+}
+
+/* ===== DRAG FOTO FEATURE ===== */
+let activePhoto = null;
+let offsetX = 0;
+let offsetY = 0;
+
+document.querySelectorAll('.photo').forEach(photo => {
+
+  photo.addEventListener('pointerdown', (e) => {
+    activePhoto = photo;
+    offsetX = e.clientX - photo.offsetLeft;
+    offsetY = e.clientY - photo.offsetTop;
+    photo.style.animation = "none";
+    photo.setPointerCapture(e.pointerId);
+  });
+
+  photo.addEventListener('pointermove', (e) => {
+    if (!activePhoto) return;
+    photo.style.left = (e.clientX - offsetX) + "px";
+    photo.style.top = (e.clientY - offsetY) + "px";
+  });
+
+  photo.addEventListener('pointerup', (e) => {
+    if (!activePhoto) return;
+    photo.releasePointerCapture(e.pointerId);
+    photo.style.animation = "gentleFloat 4s ease-in-out infinite";
+    activePhoto = null;
+  });
+
+});
+</script>
+
+</body>
+</html>
